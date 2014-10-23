@@ -1,59 +1,65 @@
-#ifndef LLIST_H
-#define LLIST_H
+#ifndef LIST_H
+#define LIST_H
 #include<iostream>
 #include"exceptions.h"
 using namespace std;
 template <class T>
-class linked_list
+class list
 {
 	class Node
 	{
 		public:
 			T info;
 			Node* next;
-			Node(T in, Node* ptr = 0)
+			Node(T in, Node* ptr = 0) : info(in), next(ptr)
 			{
-				info = in;
-				next = ptr;
 			}
 	}* front, * rear;
 	int count;
 	public:
+		//Returns true if list is empty else false
 		bool isEmpty()
 		{
 			return (front == 0);
 		}
-		linked_list()
+		//Default Constructor
+		list() : front(0), rear(0), count(0)
 		{
-			front = 0;
-			rear = 0;
-			count = 0;
 		}
+		//Returns size of list
 		int size()
 		{
 			return count;
 		}
+		//Inserts element at a given position
 		void insert(T, int pos = 0);
+		//Inserts element at front
 		void insert_front(T);
+		//Inserts element at rear
 		void insert_rear(T);
+		//Deletes element from given position
 		T pop(int pos = 0);
+		//Deletes element from front
 		T pop_front();
+		//Deletes element from rear
 		T pop_rear();
+		//Returns reference of element at given position
 		T& operator[] (int pos);
+		//Returns position of given element
 		int get_pos(T);
-		~linked_list()
+		//Destructor
+		~list()
 		{
 			Node* temp;
 			while (!isEmpty())
 			{
 				temp = front->next;
 				delete front;
-				front = temp;
-				
+				front = temp;				
 			}
 		}
 };
-template <class T> void linked_list<T>::insert(T item, int pos)
+template <class T> void list<T>::insert(T item, int pos)
 {
 	if (pos == 0)
 		insert_front(item);
@@ -63,6 +69,8 @@ template <class T> void linked_list<T>::insert(T item, int pos)
 	{
 		if (pos < -1)
 			pos += count;
+		if (pos > count || pos < 0)		//Handling invalid values of position
+			throw Error("Invalid Position");
 		Node* cur = front;
 		Node* pre = 0;
 		int i;
@@ -71,8 +79,7 @@ template <class T> void linked_list<T>::insert(T item, int pos)
 			pre = cur;
 			cur = cur->next;
 		}
-		if (cur == 0 && i < pos || pos < 0 || isEmpty())	//Handling all possible cases
-			throw Error("Invalid Position");
+
 		pre->next = new Node(item, cur);
 		if (pre->next == 0)
 			throw Error("Memory can not be allocated");
@@ -81,7 +88,7 @@ template <class T> void linked_list<T>::insert(T item, int pos)
 		count++;
 	}
 }
-template <class T> void linked_list<T>::insert_front(T item)
+template <class T> void list<T>::insert_front(T item)
 {
 	front = new Node(item, front);
 	if (front == 0)
@@ -90,7 +97,7 @@ template <class T> void linked_list<T>::insert_front(T item)
 		rear = front;
 	count++;
 }
-template <class T> void linked_list<T>::insert_rear(T item)
+template <class T> void list<T>::insert_rear(T item)
 {
 	if (!isEmpty())
 	{
@@ -108,13 +115,13 @@ template <class T> void linked_list<T>::insert_rear(T item)
 	}
 	count++;
 }
-template <class T> T linked_list<T>::pop(int pos)
+template <class T> T list<T>::pop(int pos)
 {
 	if (isEmpty())
 		throw Error("List Underflow");
 	if (pos == 0)
 		return pop_front();
-	else if (pos == -1)						//Last element
+	if (pos == -1)						//Last element
 		return pop_rear();
 	T del;
 	Node* cur = front;
@@ -122,13 +129,14 @@ template <class T> T linked_list<T>::pop(int pos)
 	int i;
 	if (pos < -1)
 		pos += count;
+	if (pos >= count || pos < 0)
+		throw Error("Invalid Position");
 	for (i = 0; cur != 0 && i < pos; i++)
 	{
 		pre = cur;
 		cur = cur->next;
 	}
-	if (cur == 0 && i < pos || pos < 0 || front == rear)
-		throw Error("Invalid position");
+
 	del = cur->info;
 	pre->next = cur->next;
 	if (cur == rear)
@@ -137,7 +145,7 @@ template <class T> T linked_list<T>::pop(int pos)
 	count--;
 	return del;
 }
-template <class T> T linked_list<T>::pop_front()
+template <class T> T list<T>::pop_front()
 {
 	if (isEmpty())
 		throw Error("List Underflow");
@@ -151,7 +159,7 @@ template <class T> T linked_list<T>::pop_front()
 	count--;
 	return del;
 }
-template <class T> T linked_list<T>::pop_rear()
+template <class T> T list<T>::pop_rear()
 {
 	if (isEmpty())
 		throw Error("List Underflow");
@@ -172,7 +180,7 @@ template <class T> T linked_list<T>::pop_rear()
 	count--;
 	return del;
 }
-template <class T> T& linked_list<T>::operator[] (int pos)
+template <class T> T& list<T>::operator[] (int pos)
 {
 	if (isEmpty())
 		throw Error("Empty List");
@@ -187,7 +195,7 @@ template <class T> T& linked_list<T>::operator[] (int pos)
 		throw Error("Invalid Position");
 	return cur->info;
 }
-template <class T> int linked_list<T>::get_pos(T item)
+template <class T> int list<T>::get_pos(T item)
 {
 	if (isEmpty())
 		throw Error("Empty List");
