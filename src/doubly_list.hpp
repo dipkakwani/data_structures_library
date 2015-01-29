@@ -18,84 +18,17 @@ class doubly_list
 	}* head, * tail;
 	size_t count;
 public:
-	class iterator
-	{
-		friend class doubly_list;
-		Node* current;
-		size_t pos;
-	public:
-
-		iterator(Node* ptr = 0, size_t p = 0) : current(ptr), pos(p)
-		{}
-		
-		bool operator== (const iterator& other)
-		{
-			return (pos == other.pos);
-		}
-
-		bool operator!= (const iterator& other)
-		{
-			return (pos != other.pos);
-		}
-
-		const iterator& operator++ ()
-		{
-			if (current == 0)
-				throw Error("Invalid Position");
-			pos++;
-			current = current->next;
-			return (*this); 
-		}
-
-		const iterator operator++ (int)
-		{
-			if (current == 0)
-				throw Error("Invalid Position");
-			const iterator temp(current, pos);
-			pos++;
-			current = current->next;
-			return temp;
-		}
-
-		const iterator& operator-- ()
-		{
-			if (current == 0)
-				throw Error("Invalid Position");
-			pos--;
-			current = current->prev;
-			return (*this);
-		}
-
-		const iterator operator-- (int)
-		{
-			if (current == 0)
-				throw Error("Invalid Position");
-			const iterator temp(current, pos);
-			pos--;
-			current = current->prev;
-			return temp;
-		}
-
-		T& operator* ()
-		{
-			if (current == 0)
-				throw Error("Invalid Position");
-			return current->info;
-		}
-
-		T* operator-> ()
-		{
-			return &(operator*());
-		}
-	};
-
+	
+	//To iterate through all the elements in the list
+	class iterator;
+	
 	//Returns iterator object of the first element of the list
 	iterator begin() const
 	{
 		return iterator(this->head->next, 0);
 	}
 	
-	//Returns iterator object of 
+	//Returns iterator object of one past the last element 
 	iterator end() const
 	{
 		return iterator(this->tail->next, count);
@@ -152,7 +85,7 @@ public:
 	//Returns position of given element and returns -(size + 1), if element not found in the list
 	long long get_pos(const T&);
 
-	//Deletes all nodes in the list
+	//Delete all nodes in the list
 	void clear()
 	{
 		Node* temp;
@@ -163,12 +96,99 @@ public:
 			head = temp;
 		}
 		delete tail;
+		head = new Node;		
+		tail = new Node;		
+		head->next = tail;
+		tail->prev = head;
+		count = 0;
 	}
 
 	//Destructor
 	~doubly_list()
 	{
 		clear();	
+		delete head;
+		delete tail;
+	}
+};
+
+template <class T> class doubly_list<T>::iterator
+{
+	friend class doubly_list;
+	Node* current;
+	size_t pos;
+public:
+
+	iterator(Node* ptr = 0, size_t p = 0) : current(ptr), pos(p)
+	{}
+
+	iterator(const iterator& other) : current(other.current), pos(other.pos)
+	{}
+
+	iterator& operator= (const iterator& other)
+	{
+		current = other.current;
+		pos = other.pos;
+	}
+
+	bool operator== (const iterator& other)
+	{
+		return (pos == other.pos);
+	}
+
+	bool operator!= (const iterator& other)
+	{
+		return (pos != other.pos);
+	}
+
+	const iterator& operator++ ()
+	{
+		if (current == 0)
+			throw Error("Invalid Position");
+		pos++;
+		current = current->next;
+		return (*this); 
+	}
+
+	const iterator operator++ (int)
+	{
+		if (current == 0)
+			throw Error("Invalid Position");
+		const iterator temp(current, pos);
+		pos++;
+		current = current->next;
+		return temp;
+	}
+
+	const iterator& operator-- ()
+	{
+		if (current == 0)
+			throw Error("Invalid Position");
+		pos--;
+		current = current->prev;
+		return (*this);
+	}
+
+	const iterator operator-- (int)
+	{
+		if (current == 0)
+			throw Error("Invalid Position");
+		const iterator temp(current, pos);
+		pos--;
+		current = current->prev;
+		return temp;
+	}
+
+	T& operator* ()
+	{
+		if (current == 0)
+			throw Error("Invalid Position");
+		return current->info;
+	}
+
+	T* operator-> ()
+	{
+		return &(operator*());
 	}
 };
 

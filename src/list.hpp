@@ -18,60 +18,10 @@ class list
 	}* front, * rear;
 	size_t count;
 public:
-
-	class iterator
-	{
-		friend class list;
-		Node* current;
-		size_t pos;
-	public:
-
-		iterator(Node* ptr = 0, size_t p = 0) : current(ptr), pos(p)
-		{}
-
-		bool operator== (const iterator& other)
-		{
-			return (pos == other.pos);
-		}
-
-		bool operator!= (const iterator& other)
-		{
-			return (pos != other.pos);
-		}
-
-		const iterator& operator++ ()
-		{
-			if (current == 0)
-				throw Error("Invalid Position");
-			pos++;
-			current = current->next;
-			return (*this); 
-		}
-
-		const iterator operator++ (int)
-		{
-			if (current == 0)
-				throw Error("Invalid Position");
-			const iterator temp(current, pos);
-			pos++;
-			current = current->next;
-			return temp;
-		}
-
-		T& operator* ()
-		{
-			if (current == 0)
-				throw Error("Invalid Position");
-			return current->info;
-		}
-
-		T* operator-> ()
-		{
-			return &(operator*());
-		}
-
-	};
-
+	
+	//To iterate through all the elements in the list
+	class iterator;
+	
 	iterator begin() const
 	{
 		return iterator(this->front, 0);
@@ -104,7 +54,7 @@ public:
 		return count;
 	}
 
-	//Inserts element at a given position
+	//Inserts element at a given position, negative position to start from end
 	void insert(const T&, long long pos = 0);
 
 	//Inserts element at front
@@ -113,7 +63,7 @@ public:
 	//Inserts element at rear
 	void insert_rear(const T&);
 
-	//Deletes element from given position
+	//Deletes element from given position, negative position to start from end
 	T pop(long long pos = 0);
 
 	//Deletes element from front
@@ -122,13 +72,13 @@ public:
 	//Deletes element from rear
 	T pop_rear();
 
-	//Returns reference of element at given position
+	//Returns reference of element at given position, negative position to start from end
 	T& operator[] (long long pos);
 
 	//Returns position of given element
 	long long get_pos(const T&);
 	
-	//
+	//Delete all the nodes in the list
 	void clear()
 	{
 		Node* temp;
@@ -136,14 +86,77 @@ public:
 		{
 			temp = front->next;
 			delete front;
-			front = temp;				
+			front = temp;
 		}
-
+		count = 0;
+		front = rear = 0;
 	}
+
 	//Destructor
 	~list()
 	{
 		clear();
+	}
+};
+
+template <class T> class list<T>::iterator
+{
+	friend class list;
+	Node* current;
+	size_t pos;
+public:
+
+	iterator(Node* ptr = 0, size_t p = 0) : current(ptr), pos(p)
+	{}
+	
+	iterator(const iterator& other) : current(other.current), pos(other.pos)
+	{}
+
+	iterator& operator= (const iterator& other)
+	{
+		current = other.current;
+		pos = other.pos;
+	}
+		
+	bool operator== (const iterator& other)
+	{
+		return (pos == other.pos);
+	}
+
+	bool operator!= (const iterator& other)
+	{
+		return (pos != other.pos);
+	}
+
+	const iterator& operator++ ()
+	{
+		if (current == 0)
+			throw Error("Invalid Position");
+		pos++;
+		current = current->next;
+		return (*this); 
+	}
+
+	const iterator operator++ (int)
+	{
+		if (current == 0)
+			throw Error("Invalid Position");
+		const iterator temp(current, pos);
+		pos++;
+		current = current->next;
+		return temp;
+	}
+
+	T& operator* ()
+	{
+		if (current == 0)
+			throw Error("Invalid Position");
+		return current->info;
+	}
+
+	T* operator-> ()
+	{
+		return &(operator*());
 	}
 };
 

@@ -22,72 +22,22 @@ class vector
 	}
 public:
 
-	class iterator
-	{
-		friend class vector;
-		const vector* obj;
-		size_t pos;
-	public:
-
-		iterator(const vector* ptr = 0, size_t p = 0) : obj(ptr), pos(p)
-		{}
-
-		bool operator== (const iterator& other)
-		{
-			return (pos == other.pos);
-		}
-
-		bool operator!= (const iterator& other)
-		{
-			return (pos != other.pos);
-		}
-
-		const iterator& operator++ ()
-		{
-			pos++;
-			return (*this);
-		}
-
-		const iterator operator++ (int)
-		{
-			const iterator temp = (*this);
-			pos++;
-			return temp;
-		}
-
-		const iterator& operator-- ()
-		{
-			pos--;
-			return (*this);
-		}
-
-		const iterator operator-- (int)
-		{
-			const iterator temp = (*this);
-			pos--;
-			return temp;
-		}
-
-		T& operator* ()
-		{
-			return obj->v[pos];
-		}
-
-		T* operator-> ()
-		{
-			return &(operator*());
-		}
-	};
-
+	//To iterate through all the elements in the vector
+	class iterator;
+	
+	//Returns true if vector is empty, else false
 	bool isEmpty()
 	{
 		return (used == 0);
 	}
+
+
 	vector() : used(0), max(initial_size)
 	{
 		v = new T[max];
 	}
-
+	
+	//Copy constructor
 	vector(const vector& other) : used(other.used), max(other.max)
 	{
 		v = new T[max];
@@ -95,6 +45,7 @@ public:
 			v[i] = other.v[i];
 	}
 
+	//Returns the size of the vector
 	size_t size() const
 	{
 		return used;
@@ -124,8 +75,10 @@ public:
 		return iterator(this, used);
 	}
 
+	//Inserts element at a given position, negative position to start from end
 	void insert(const T& item, long long pos = 0);
 
+	//Insert element at rear
 	void insert_rear(const T& item)
 	{
 		if (used == max)
@@ -133,6 +86,7 @@ public:
 		v[used++] = item;
 	}
 
+	//Insert element at front
 	void insert_front(const T& item)
 	{
 		if (used == max)
@@ -143,8 +97,10 @@ public:
 		used++;
 	}
 
+	//Deletes element from given position, negative position to start from end
 	T pop(long long pos = 0);
 
+	//Deletes element from rear
 	T pop_rear()
 	{
 		if (used == 0)
@@ -153,6 +109,7 @@ public:
 		return v[used + 1];
 	}
 
+	//Deletes element from front
 	T pop_front()
 	{
 		if (used == 0)
@@ -164,14 +121,93 @@ public:
 		return del;
 	}
 
+	//Returns reference of element at given position, negative position to start from end
 	T& operator[] (long long pos);
-
+	
+	//Returns position of given element
 	long long get_pos(const T& item);
+
+	//Delete all elements from the vector
+	void clear()
+	{
+		delete[] v;
+		v = 0;
+		used = 0;
+		max = initial_size;
+		v = new T[max];
+	}
 
 	~vector()
 	{
 		delete[] v;
 		v = 0;
+	}
+};
+
+template <class T> class vector<T>::iterator
+{
+	friend class vector;
+	const vector* obj;
+	size_t pos;
+	
+public:
+
+	iterator(const vector* ptr = 0, size_t p = 0) : obj(ptr), pos(p)
+	{}
+
+	iterator (const iterator& other) : obj(other.obj), pos(other.pos)
+	{}
+
+	iterator operator= (const iterator& other)
+	{
+		obj = other.obj;
+		pos = other.pos;
+	}
+
+	bool operator== (const iterator& other)
+	{
+		return (pos == other.pos);
+	}
+
+	bool operator!= (const iterator& other)
+	{
+		return (pos != other.pos);
+	}
+
+	const iterator& operator++ ()
+	{
+		pos++;
+		return (*this);
+	}
+
+	const iterator operator++ (int)
+	{
+		const iterator temp = (*this);
+		pos++;
+		return temp;
+	}
+
+	const iterator& operator-- ()
+	{
+		pos--;
+		return (*this);
+	}
+
+	const iterator operator-- (int)
+	{
+		const iterator temp = (*this);
+		pos--;
+		return temp;
+	}
+
+	T& operator* ()
+	{
+		return obj->v[pos];
+	}
+
+	T* operator-> ()
+	{
+		return &(operator*());
 	}
 };
 
