@@ -36,19 +36,21 @@ public:
 	bst() : root(0)
 	{}
 	
-	//Copy constructor
-	bst(const bst& other)
-	{
-		root = copy_nodes(other->root);
-	}
-
-	bst& operator= (const bst& other)
-	{
-		root = copy_nodes(other->root);
-	}
-
 	//Helper function for copy constructor and assignment operator
 	Node* copy_nodes(Node* p);
+
+	//Copy constructor
+	bst(const bst<T>& other)
+	{
+		root = copy_nodes(other.root);
+	}
+
+	bst& operator= (const bst<T>& other)
+	{
+		//clear();
+		root = copy_nodes(other.root);
+		return (*this);
+	}
 
 	//Preorder Traversal
 	template <class Collection>
@@ -82,12 +84,21 @@ public:
 
 	//Balance the BST - organise nodes such that all the leaves are on same or adjacent levels
 	void balance();
+
+	//Deletes all the nodes in BST
+	void clear();
+
+	//Destructor
+	~bst()
+	{
+		clear();
+	}
 };
 
 template <class T> typename bst<T>:: Node* bst<T>::copy_nodes(Node* p)
 {
 	if (p != 0)
-		return Node(p->info, copy_nodes(p->left), copy_nodes(p->right));
+		return new Node(p->info, copy_nodes(p->left), copy_nodes(p->right));
 	return 0;
 }
 
@@ -269,5 +280,18 @@ template <class T> void bst<T>::balance()
 		for (size_t i = 0; i < m; i++)
 			rotate_left(0, root, root->right);
 	}
+}
+
+template <class T> void bst<T>::clear()
+{
+	Node* cur, *temp;
+	create_backbone();	//Transformed into linked list structure
+	for (cur = root; cur != 0;)
+	{	
+		temp = cur->right;
+		delete cur;
+		cur = temp;
+	}
+	root = 0;
 }
 #endif
