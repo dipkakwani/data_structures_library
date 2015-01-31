@@ -5,6 +5,7 @@
 #include "vector.hpp"
 #include "list.hpp"
 #include "doubly_list.hpp"
+#include "queue.hpp"
 using namespace std;
 template <class T>
 class bst
@@ -47,7 +48,7 @@ public:
 
 	bst& operator= (const bst<T>& other)
 	{
-		//clear();
+		clear();
 		root = copy_nodes(other.root);
 		return (*this);
 	}
@@ -84,6 +85,10 @@ public:
 
 	//Balance the BST - organise nodes such that all the leaves are on same or adjacent levels
 	void balance();
+
+	//Breadth First Search - level order traversal
+	template <class Collection>
+	void bfs(Collection& v);
 
 	//Deletes all the nodes in BST
 	void clear();
@@ -279,6 +284,25 @@ template <class T> void bst<T>::balance()
 		m = m >> 1;
 		for (size_t i = 0; i < m; i++)
 			rotate_left(0, root, root->right);
+	}
+}
+
+template <class T> template <class Collection> void bst<T>::bfs(Collection& v)
+{
+	queue<Node*> Q;
+	Node* temp;
+	Q.enqueue(root);
+	while (!Q.isEmpty())
+	{
+		temp = Q.dequeue();
+		if (temp != 0)
+		{
+			v.insert_rear(temp->info);	
+			if (temp->left != 0)
+				Q.enqueue(temp->left);
+			if (temp->right != 0)
+				Q.enqueue(temp->right);
+		}
 	}
 }
 
